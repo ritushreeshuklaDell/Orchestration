@@ -1,0 +1,184 @@
+---
+swagger: "2.0"
+info:
+  description: "To retreive verfication information of income , expenditure and employer\
+    \ of an account(s)"
+  version: "1.0"
+  title: "accountverification"
+host: "localhost:10010"
+schemes:
+- "http"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /pdi/verification/accounts:
+    get:
+      description: "returns verification information for account(s) for  income /\
+        \ expenditure / employer on basis of  filter verificationType"
+      operationId: "pdiVerificationAccountsGET"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "sortcode"
+        in: "query"
+        description: "sortcode of an account"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+
+      - name: "accountID"
+        in: "query"
+        description: "unique identifier of account"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+
+      - name: "accountHolderName"
+        in: "query"
+        description: "name of holder  of an account"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+
+      - name: "verificationType"
+        in: "query"
+        description: "to choose type of verification "
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "IN"
+          - "EMP"
+          - "EX"
+
+      responses:
+        200:
+          description: "Verification Information for an account(s)."
+          schema:
+            $ref: "#/definitions/Verification"
+          examples:
+            application/json:
+              Verification:
+                Accounts:
+                - sortcode: "12345"
+                  accountHolderName: "Ritushree"
+                  accountID: "849490309"
+                  expenditureVerification: "Not defaulter"
+                - sortcode: "12344"
+                  accountHolderName: "Adam"
+                  accountID: "8494903129"
+                  incomeVerification: "Verified and positive"
+        206:
+          description: "Partial Verification Information for an account(s)"
+          schema:
+            $ref: "#/definitions/PartialVerification"
+          examples:
+            application/json:
+              NotSuccess:
+              - accountID: "8494903129"
+                error:
+                - errorCode: "BUS04"
+                - errorReason: "Record Not found"
+              Verification:
+                Accounts:
+                - accountHolderName: "Ritushree"
+                  accountID: "849490309"
+                  sortcode: "12344"
+                  incomeVerification: "Verified and positive"
+        400:
+          description: "Bad request."
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            errorCode: "BUS03"
+            errorReason: "Missing Mandatory Fields/Incorrect data"
+        401:
+          description: "Not Authorised."
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            errorCode: "SEC01"
+            errorReason: "Not Authorised to see Data"
+        404:
+          description: "No Data Found."
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            errorCode: "BUS01"
+            errorReason: "No matching data found in backend"
+        500:
+          description: "Underlying system error."
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            errorCode: "BUS02"
+            errorReason: "Error from Backend"
+      x-swagger-router-controller: "Default"
+securityDefinitions:
+  api_key_token:
+    description: "Security parameter taken "
+    type: "apiKey"
+    name: "token"
+    in: "header"
+definitions:
+  Verification:
+    type: "object"
+    properties:
+      accounts:
+        type: "array"
+        items:
+          $ref: "#/definitions/Account"
+  PartialVerification:
+    type: "object"
+    properties:
+      notSucess:
+        type: "array"
+        items:
+          $ref: "#/definitions/FailedAccount"
+      verification:
+        $ref: "#/definitions/Verification"
+  Error:
+    type: "object"
+    properties:
+      errorCode:
+        type: "string"
+      errorReason:
+        type: "string"
+  FailedAccount:
+    type: "object"
+    properties:
+      accountID:
+        type: "string"
+      error:
+        $ref: "#/definitions/Error"
+  Account:
+    type: "object"
+    required:
+    - "accountHolderName"
+    - "accountID"
+    - "sortcode"
+    properties:
+      sortcode:
+        type: "string"
+        description: "Sortcode of an account"
+      accountID:
+        type: "string"
+        description: "Identifier of an account"
+      accountHolderName:
+        type: "string"
+        description: "Name of the account holder"
+      incomeVerification:
+        type: "string"
+        description: "Income verification of an account"
+      employerVerification:
+        type: "string"
+        description: "Employer verification of an account"
+      expenditureVerification:
+        type: "string"
+        description: "Expenditure Verification of an account"

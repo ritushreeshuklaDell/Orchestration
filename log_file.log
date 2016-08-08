@@ -1,0 +1,7 @@
+2016-08-08 12:05:48,799 DEBUG Entered Orch Services Layer
+2016-08-08 12:05:49,302 INFO  Calling Micro services with sortcode 020205 accountID AC104and accountHolderName Elle
+2016-08-08 12:05:49,423 INFO  Response from micro services
+2016-08-08 18:34:57,057 DEBUG Entered Orch Services Layer
+2016-08-08 18:34:57,673 INFO  Calling Micro services with sortcode 020205 accountID AC104and accountHolderName Elle
+2016-08-08 18:34:58,706 INFO  Response from micro services
+2016-08-08 18:34:58,706 ERROR Could not reach the underlying service
